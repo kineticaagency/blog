@@ -1,0 +1,24 @@
+<script type="text/javascript">
+var page_time = Math.round(new Date().getTime()/1000);
+var active_page_time = 0;
+var active_page_last_time = Math.round(new Date().getTime()/1000);
+
+function onVisibilityChange() {
+   var cur = Math.round(new Date().getTime()/1000);
+   if(document.visibilityState) {          
+       if (document.visibilityState == 'hidden') active_page_time += cur - active_page_last_time;           
+       else active_page_last_time = cur;
+    }
+}
+
+document.addEventListener('visibilitychange', onVisibilityChange, false);
+
+window.onbeforeunload = function(e) {
+    onVisibilityChange();
+    if (typeof dataLayer != 'undefined') {
+        dataLayer.push({'event': 'GAEvent', 'eventCategory' : 'time', 'eventAction' : 'active', 'eventLabel' : Math.round(active_page_time/60), 'eventNonInteraction': true });
+        dataLayer.push({'event': 'GAEvent', 'eventCategory' : 'time', 'eventAction' : 'all', 'eventLabel' : Math.round((new Date().getTime()/1000 - page_time)/60), 'eventNonInteraction': true });
+    }
+    return false;
+}
+</script>
